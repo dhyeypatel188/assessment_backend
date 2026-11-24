@@ -8,7 +8,11 @@ const { attachLiveTranscription } = require('./live');
 const app = express();
 
 // CORS: frontend is hosted separately. CORS_ORIGIN = comma-separated list, or "*" (default).
-const allowed = (process.env.CORS_ORIGIN || '*').split(',').map((s) => s.trim());
+// Trailing slashes are stripped because browsers send Origin without one.
+const allowed = (process.env.CORS_ORIGIN || '*')
+  .split(',')
+  .map((s) => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowed.includes('*')) res.setHeader('Access-Control-Allow-Origin', '*');
